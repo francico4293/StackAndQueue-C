@@ -72,7 +72,7 @@ void upSizeArray(struct dynamicArray *arrPtr) {
     // struct to point to the new array
     free(arrPtr->array);
     arrPtr->array = newArray;
-    
+
     // double array capacity
     arrPtr->capacity = 2 * arrPtr->capacity;
 }
@@ -92,6 +92,18 @@ void push(int value, struct dynamicArray *stackPtr) {
 
     *(stackPtr->array + stackPtr->size) = value;  // push value to the end of the stack
     stackPtr->size++;  // increment array size
+}
+
+/**
+ * @brief Returns the top value on the stack without removing it
+ * from the stack
+ * 
+ * @param stackPtr The address of the dynamic array struct being used to
+ * represent a stack
+ * @return int The top value on the stack
+ */
+int peek(struct dynamicArray *stackPtr) {
+    return *(stackPtr->array + (stackPtr->size - 1));
 }
 
 int main(void) {
