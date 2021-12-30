@@ -11,7 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define TABLE_RATIO 0.75
+#define TABLE_RATIO_UPPER 0.75
+#define TABLE_RATIO_LOWER 0.25
 
 struct dynamicArray {
     int size;  // current number of elements in the array
@@ -78,6 +79,24 @@ void upSizeArray(struct dynamicArray *arrPtr) {
 }
 
 /**
+ * @brief 
+ * 
+ * @param arrPtr 
+ */
+void downSizeArray(struct dynamicArray *arrPtr) {
+    int *newArray = (int*) malloc((arrPtr->capacity / 2) * sizeof(int));
+
+    for (int index = 0; index < arrPtr->size - 1; index++) {
+        newArray[index] = *(arrPtr->array + index);
+    }
+
+    free(arrPtr->array);
+    arrPtr->array = newArray;
+
+    arrPtr->capacity = arrPtr->capacity / 2;
+}
+
+/**
  * @brief Pushes a new value to the top of the stack
  * 
  * @param value The value to push
@@ -86,12 +105,28 @@ void upSizeArray(struct dynamicArray *arrPtr) {
  */
 void push(int value, struct dynamicArray *stackPtr) {
     // check if the underlying static array needs to be up sized
-    if ((float) (stackPtr->size + 1) / (float) (stackPtr->capacity) >= TABLE_RATIO) {
+    if ((float) (stackPtr->size + 1) / (float) (stackPtr->capacity) >= TABLE_RATIO_UPPER) {
         upSizeArray(stackPtr);
     }
 
     *(stackPtr->array + stackPtr->size) = value;  // push value to the end of the stack
     stackPtr->size++;  // increment array size
+}
+
+/**
+ * @brief 
+ * 
+ * @param stackPtr 
+ * @return int 
+ */
+int pop(struct dynamicArray *stackPtr) {
+    int top = *(stackPtr->array + (stackPtr->size - 1));
+
+    if ((float) (stackPtr->size - 1) / (float) (stackPtr->capacity) <= TABLE_RATIO_UPPER) {
+        downSizeArray(stackPtr);
+    }
+
+    stackPtr->size--;
 }
 
 /**
@@ -120,6 +155,9 @@ int main(void) {
     printArray(&stack);
 
     push(2, &stack);
+    printArray(&stack);
+
+    pop(&stack);
     printArray(&stack);
 
     return 0;
